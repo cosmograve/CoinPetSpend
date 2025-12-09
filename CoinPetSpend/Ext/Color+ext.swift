@@ -8,6 +8,7 @@
 import SwiftUI
 
 extension Color {
+    static let cardBg = Color(hex: "282828")
     static let appBg = Color(hex: "1D1D1D")
     static let appPrimaryBlue = Color(hex: "0B3FFA")
     static let appAccentYellow = Color(hex: "FFE600")

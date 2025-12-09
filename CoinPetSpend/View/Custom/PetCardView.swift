@@ -121,8 +121,8 @@ struct PetCardView: View {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(Color.appPrimaryBlue, lineWidth: 2)
         )
-        .clipped() // Это предотвратит вылазиние контента за пределы карточки
-        .compositingGroup() // Группирует все элементы для правильного отображения
+        .clipped()
+        .compositingGroup()
     }
     
     private var avatarView: some View {
@@ -131,8 +131,8 @@ struct PetCardView: View {
                let uiImage = UIImage(data: data) {
                 Image(uiImage: uiImage)
                     .resizable()
-                    .scaledToFill() // Заполняет область
-                    .frame(width: 110, height: 110) // Фиксированный размер
+                    .scaledToFill()
+                    .frame(width: 110, height: 110)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)

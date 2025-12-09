@@ -9,9 +9,7 @@ import SwiftUI
 
 struct PetsView: View {
     @EnvironmentObject private var store: PetStore
-    
     @State private var showAdd = false
-    
     private let buttonHorizontalPadding: CGFloat = 69
     private let buttonOffsetFromBottom: CGFloat = 28
     private let buttonHeight: CGFloat = 60
@@ -52,8 +50,15 @@ struct PetsView: View {
                         ScrollView {
                             VStack(spacing: 16) {
                                 ForEach(store.pets) { pet in
-                                    PetCardView(pet: pet)
-                                        .environmentObject(store)
+                                    NavigationLink {
+                                        PetStatsView(pet: pet)
+                                            .environmentObject(store)
+                                            .navigationBarBackButtonHidden()
+                                    } label: {
+                                        PetCardView(pet: pet)
+                                            .environmentObject(store)
+                                    }
+                                    .buttonStyle(.plain)
                                 }
                             }
                             .padding(.top, 12)
