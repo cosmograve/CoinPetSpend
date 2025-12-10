@@ -5,6 +5,8 @@ struct AddPetView: View {
     @EnvironmentObject private var store: PetStore
     @Environment(\.dismiss) var dismiss
     
+    let petToEdit: Pet?
+    
     @State private var name: String = ""
     @State private var selectedKind: PetKind?
     @State private var birthDate: Date?
@@ -39,6 +41,24 @@ struct AddPetView: View {
         return formatter.string(from: date)
     }
     
+    init(petToEdit: Pet? = nil) {
+        self.petToEdit = petToEdit
+        
+        if let pet = petToEdit {
+            _name = State(initialValue: pet.name)
+            _selectedKind = State(initialValue: pet.kind)
+            _birthDate = State(initialValue: pet.birthDate)
+            _photoData = State(initialValue: pet.photoData)
+            _calendarMonth = State(initialValue: pet.birthDate ?? Date())
+        } else {
+            _name = State(initialValue: "")
+            _selectedKind = State(initialValue: nil)
+            _birthDate = State(initialValue: nil)
+            _photoData = State(initialValue: nil)
+            _calendarMonth = State(initialValue: Date())
+        }
+    }
+    
     var body: some View {
         ZStack(alignment: .top) {
             Color.appBg
@@ -46,7 +66,7 @@ struct AddPetView: View {
             
             VStack(spacing: 0) {
                 AppNavigationBar(
-                    title: "ADD A PET",
+                    title: petToEdit == nil ? "ADD A PET" : "EDIT PET",
                     onBack: { dismiss() },
                     onMore: nil
                 )
@@ -229,12 +249,8 @@ struct AddPetView: View {
                                 x: geometry.size.width - width,
                                 y: 1
                             )
-                            
                         }
-                            
                     }
-                        
-                        
                 )
         }
     }
@@ -275,12 +291,25 @@ struct AddPetView: View {
         VStack {
             Button {
                 guard let kind = selectedKind else { return }
-                store.addPet(
-                    name: name.trimmingCharacters(in: .whitespacesAndNewlines),
-                    kind: kind,
-                    birthDate: birthDate,
-                    photoData: photoData
-                )
+                let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+                
+                if let existing = petToEdit {
+                    store.updatePet(
+                        existing,
+                        name: trimmedName,
+                        kind: kind,
+                        birthDate: birthDate,
+                        photoData: photoData
+                    )
+                } else {
+                    store.addPet(
+                        name: trimmedName,
+                        kind: kind,
+                        birthDate: birthDate,
+                        photoData: photoData
+                    )
+                }
+                
                 dismiss()
             } label: {
                 Text("Save")
@@ -306,6 +335,12 @@ struct AddPetView: View {
                 .padding(.top, 18)
         }
     }
+}
+
+#Preview {
+    AddPetView()
+        .environmentObject(PetStore())
+        .preferredColorScheme(.dark)
 }
 
 struct CalendarOverlay: View {

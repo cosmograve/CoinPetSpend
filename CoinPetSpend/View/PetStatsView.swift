@@ -1,6 +1,5 @@
 import SwiftUI
 
-
 enum CompareCategoryOption: Identifiable, Equatable {
     case perMonth
     case category(ExpenseCategory)
@@ -161,14 +160,13 @@ struct PetStatsView: View {
                             compareSection(with: other)
                         }
                         
-                        
                         if hasOtherPets {
                             PrimaryActionButton(title: "Compare Pets") {
                                 showCompareList.toggle()
                             }
-                            .padding(.horizontal, 70)
-                            
+                            .padding(.horizontal, 50)
                         }
+                        
                         Spacer(minLength: 0)
                     }
                     .padding(.top, 24)
@@ -180,12 +178,20 @@ struct PetStatsView: View {
         .overlay(alignment: .topTrailing) {
             if showMenu {
                 VStack(spacing: 0) {
-                    menuButton(title: "Edit Pet", iconName: "pencil") {
+                    menuButton(
+                        title: "Edit Pet",
+                        iconName: "pencil",
+                        isDestructive: false
+                    ) {
                         showEdit = true
                         showMenu = false
                     }
                     
-                    menuButton(title: "Delete", iconName: "trash") {
+                    menuButton(
+                        title: "Delete",
+                        iconName: "trash",
+                        isDestructive: true
+                    ) {
                         showDeleteConfirmation = true
                         showMenu = false
                     }
@@ -225,12 +231,16 @@ struct PetStatsView: View {
                 .environmentObject(store)
                 .navigationBarBackButtonHidden()
         }
-        .navigationDestination(isPresented: $showLimitsSheet, destination: {
+        .navigationDestination(isPresented: $showLimitsSheet) {
             PetLimitsView(pet: pet)
                 .environmentObject(store)
                 .navigationBarBackButtonHidden()
-        })
-        
+        }
+        .navigationDestination(isPresented: $showEdit) {
+            AddPetView(petToEdit: pet)
+                .environmentObject(store)
+                .navigationBarBackButtonHidden()
+        }
         .alert(
             "Delete Pet",
             isPresented: $showDeleteConfirmation
@@ -327,18 +337,22 @@ struct PetStatsView: View {
     private func menuButton(
         title: String,
         iconName: String,
+        isDestructive: Bool,
         action: @escaping () -> Void
     ) -> some View {
-        Button(action: action) {
+        let iconColor: Color = isDestructive ? .red : .appAccentYellow
+        let textColor: Color = isDestructive ? .red : .white
+        
+        return Button(action: action) {
             HStack(spacing: 12) {
                 Image(systemName: iconName)
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(.appAccentYellow)
+                    .foregroundColor(iconColor)
                     .frame(width: 20, height: 20)
                 
                 Text(title)
                     .appFont(.agText, size: 16)
-                    .foregroundColor(.white)
+                    .foregroundColor(textColor)
                 
                 Spacer()
             }
@@ -400,7 +414,6 @@ struct PetStatsView: View {
             VStack(spacing: 16) {
                 ForEach(otherPets) { other in
                     Button {
-                        
                         compareWithPet = other
                         withAnimation(.easeInOut(duration: 0.2)) {
                             showCompareList = false
@@ -497,14 +510,14 @@ struct PetStatsView: View {
                 name: pet.name,
                 amount: firstAmount,
                 maxAmount: maxAmount,
-                barColor: .categoryVitaminsAndSupplements   // зелёный
+                barColor: .categoryVitaminsAndSupplements
             )
             
             compareRow(
                 name: other.name,
                 amount: secondAmount,
                 maxAmount: maxAmount,
-                barColor: .categoryVeterinaryCare          // голубой
+                barColor: .categoryVeterinaryCare
             )
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -546,7 +559,6 @@ struct PetStatsView: View {
                 )
         )
         .frame(width: width, height: height, alignment: .bottomTrailing)
-        
         .offset(y: -height - 8)
     }
         
@@ -613,7 +625,6 @@ struct PetStatsView: View {
         switch selectedCompareCategory {
         case .perMonth:
             return expenses.reduce(Decimal.zero) { $0 + $1.amount }
-            
         case .category(let category):
             let filtered = expenses.filter { $0.category == category }
             return filtered.reduce(Decimal.zero) { $0 + $1.amount }
@@ -770,7 +781,6 @@ struct MonthlyDonutCard: View {
         }
     }
 }
-
 
 extension MonthPeriod {
     func title(locale: Locale = Locale(identifier: "en_US")) -> String {
@@ -940,7 +950,6 @@ struct CompareCategoryDropdownShape: Shape {
         
         path.addLine(to: CGPoint(x: rect.minX + r, y: rect.maxY))
         
-        // скруглённый нижний левый
         path.addArc(
             center: CGPoint(x: rect.minX + r, y: rect.maxY - r),
             radius: r,
@@ -949,7 +958,6 @@ struct CompareCategoryDropdownShape: Shape {
             clockwise: false
         )
         
-        // левая сторона до верхнего левого + скругление
         path.addLine(to: CGPoint(x: rect.minX, y: rect.minY + r))
         path.addArc(
             center: CGPoint(x: rect.minX + r, y: rect.minY + r),

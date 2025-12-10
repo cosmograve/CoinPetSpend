@@ -125,6 +125,31 @@ final class PetStore: ObservableObject {
         limits.append(limit)
     }
     
+    func updateLimit(
+        _ limit: SpendingLimit,
+        for pet: Pet,
+        category: ExpenseCategory?,
+        month: MonthPeriod,
+        amount: Decimal
+    ) {
+        guard let index = limits.firstIndex(where: { $0.id == limit.id }) else {
+            return
+        }
+        
+        let current = limits[index]
+        
+        let updated = SpendingLimit(
+            id: current.id,
+            petId: pet.id,
+            category: category,
+            month: month,
+            amount: amount,
+            isActive: current.isActive
+        )
+        
+        limits[index] = updated
+    }
+    
     func expenses(for pet: Pet) -> [PetExpense] {
         expenses.expenses(for: pet.id)
     }
