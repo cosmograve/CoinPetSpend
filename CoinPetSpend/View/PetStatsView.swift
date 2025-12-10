@@ -149,12 +149,10 @@ struct PetStatsView: View {
                                 formattedTotal: formatCurrency(totalForMonth)
                             )
                         }
-                        if !store.limitUsages(for: pet).isEmpty {
-                            LimitsCardView(
-                                usages: store.limitUsages(for: pet),
-                                onManageTap: { showLimitsSheet = true }
-                            )
-                        }
+                        LimitsCardView(
+                            usages: store.limitUsages(for: pet),
+                            onManageTap: { showLimitsSheet = true }
+                        )
                         if !monthlyExpenses.isEmpty {
                             recentExpensesSection
                         }
@@ -162,7 +160,7 @@ struct PetStatsView: View {
                         if let other = compareWithPet {
                             compareSection(with: other)
                         }
-
+                        
                         
                         if hasOtherPets {
                             PrimaryActionButton(title: "Compare Pets") {
@@ -227,6 +225,11 @@ struct PetStatsView: View {
                 .environmentObject(store)
                 .navigationBarBackButtonHidden()
         }
+        .navigationDestination(isPresented: $showLimitsSheet, destination: {
+            PetLimitsView(pet: pet)
+                .environmentObject(store)
+                .navigationBarBackButtonHidden()
+        })
         
         .alert(
             "Delete Pet",
