@@ -78,7 +78,7 @@ struct AddPetView: View {
                         VStack(spacing: 28) {
                             nameRow
                             kindRow
-                                .zIndex(1)
+                                .zIndex(100)
                             birthDateRow
                         }
                     }
@@ -94,8 +94,10 @@ struct AddPetView: View {
                 .frame(height: buttonHeight)
                 .padding(.horizontal, buttonHorizontalPadding)
                 .padding(.bottom, buttonOffsetFromBottom)
+                .allowsHitTesting(!showKindDropdown && !showCalendarOverlay)
+                .opacity(showKindDropdown || showCalendarOverlay ? 0.3 : 1.0)
         }
-        .sheet(isPresented: $showImagePicker) {
+        .fullScreenCover(isPresented: $showImagePicker) {
             ImagePicker(sourceType: imageSourceType) { data in
                 photoData = data
             }
@@ -218,6 +220,7 @@ struct AddPetView: View {
                     GeometryReader { geometry in
                         if showKindDropdown {
                             let width = geometry.size.width * 0.4
+                            
                             VStack(spacing: 24) {
                                 ForEach(PetKind.allCases) { kind in
                                     Button {
@@ -249,6 +252,7 @@ struct AddPetView: View {
                                 x: geometry.size.width - width,
                                 y: 1
                             )
+                            .zIndex(1001)
                         }
                     }
                 )
